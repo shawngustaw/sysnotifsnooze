@@ -4,7 +4,7 @@ android {
     compileSdkVersion 26
     buildToolsVersion "26.0.1"
     defaultConfig {
-        applicationId "com.iboalali.sysnotifsnooze"
+        applicationId "com.shawngustaw.sysnotifsnooze"
         minSdkVersion 26
         targetSdkVersion 26
         versionCode 35

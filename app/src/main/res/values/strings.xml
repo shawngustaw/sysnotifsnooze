@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name" translatable="false">Hide \"running in the background\" Notification</string>
     <string name="service_name" translatable="false">@string/app_name</string>
-    <string name="permission_request_msg" translatable="false">For this app to remove the annoying \"running in the background\" Notification, you have to allow this app to access your notification.\n\nPress OK, and in the next screen, switch the permission for this app ON and then press \"Allow\"</string>
+    <string name="permission_request_msg" translatable="false">For this app to remove the annoying \"running in the background\" Notification, you have to allow this app to access your notifications.\n\nPress OK, and in the next screen, switch the permission for this app ON and then press \"Allow\"</string>
     <string name="permission_request_title" translatable="false">Permission to Access Notifications</string>
     <string name="Allow" translatable="false">Allow</string>
     <string name="OK" translatable="false">OK</string>
@@ -12,13 +12,9 @@
     <string name="hidden_success" translatable="false">Successfully Hidden</string>
     <string name="granted" translatable="false">Granted</string>
     <string name="not_granted" translatable="false">Not Granted</string>
-    <string name="string_settings_small_donation" translatable="false">a Small Donation</string>
-    <string name="string_settings_large_donation" translatable="false">a Large Donation</string>
-    <string name="string_settings_follow_me" translatable="false">Follow me</string>
     <string name="string_settings_notification_access_permission" translatable="false">Notification Access Permission</string>
     <string name="string_settings_permission" translatable="false">Permission</string>
-    <string name="string_settings_support_me_with" translatable="false">Support me with …</string>
-    <string name="string_filter_intent" translatable="false">com.iboalali.sysnotifsnooze.NOTIFICATION_LISTENER_SERVICE_INTENT</string>
+    <string name="string_filter_intent" translatable="false">com.shawngustaw.sysnotifsnooze.NOTIFICATION_LISTENER_SERVICE_INTENT</string>
     <string name="string_settings_hide_app_icon_from_launcher" translatable="false">Hide app icon from launcher</string>
     <string name="string_settings_settings" translatable="false">Settings</string>
     <string name="string_hide_icon_alert_dialog_title" translatable="false">Hide the app icon from launcher?</string>

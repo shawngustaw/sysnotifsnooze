@@ -1,4 +1,4 @@
-package com.iboalali.sysnotifsnooze;
+package com.shawngustaw.sysnotifsnooze;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -16,13 +16,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.iboalali.sysnotifsnooze.util.IabHelper;
-import com.iboalali.sysnotifsnooze.util.IabResult;
-import com.iboalali.sysnotifsnooze.util.Inventory;
-import com.iboalali.sysnotifsnooze.util.Purchase;
-import com.iboalali.sysnotifsnooze.util.SkuDetails;
-
-import java.util.ArrayList;
+import com.shawngustaw.sysnotifsnooze.R;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,19 +33,15 @@ public class MainActivity extends AppCompatActivity {
     public static class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener{
         private static final String KEY_NOTIFICATION_PERMISSION = "notification_permission";
         private static final String KEY_SETTINGS_HIDE_ICON = "hide_icon";
-        private static final String KEY_SMALL_TIP = "small_tip";
-        private static final String KEY_LARGE_TIP = "large_tip";
+
         private static final String TAG = "SettingsFragment";
 
         private boolean isSwitchSet;
 
-        IabHelper mHelper;
         Context CONTEXT;
 
         private Preference notification_permission;
         private SwitchPreference settings_hide_icon;
-        private Preference small_tip;
-        private Preference large_tip;
         private boolean isNotificationAccessPermissionGranted;
 
         private SharedPreferences sharedPreferences;
@@ -65,34 +55,13 @@ public class MainActivity extends AppCompatActivity {
 
             sharedPreferences = getActivity().getPreferences(MODE_PRIVATE);
 
-            String base64EncodedPublicKey = CONTEXT.getString(R.string.public_license_key);
-
-            mHelper = new IabHelper(CONTEXT, base64EncodedPublicKey);
-            mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
-                public void onIabSetupFinished(IabResult result) {
-                    if (!result.isSuccess()) {
-                        Log.d(TAG, "Problem setting up In-app Billing: " + result);
-                        return;
-                    }
-                    // Hooray, IAB is fully set up!
-                    ArrayList<String> skus = new ArrayList<String>();
-                    skus.add(MainActivity.SKU_SMALL_TIP_2);
-                    skus.add(MainActivity.SKU_LARGE_TIP_5);
-
-                    mHelper.queryInventoryAsync(true, skus, queryInventoryFinishedListener);
-
-                }
-            });
-
             notification_permission = findPreference(KEY_NOTIFICATION_PERMISSION);
             settings_hide_icon = (SwitchPreference)findPreference(KEY_SETTINGS_HIDE_ICON);
-            small_tip = findPreference(KEY_SMALL_TIP);
-            large_tip = findPreference(KEY_LARGE_TIP);
+
 
             notification_permission.setOnPreferenceClickListener(this);
             settings_hide_icon.setOnPreferenceClickListener(this);
-            small_tip.setOnPreferenceClickListener(this);
-            large_tip.setOnPreferenceClickListener(this);
+
 
             settings_hide_icon.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
@@ -216,102 +185,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        @Override
-        public void onDestroy() {
-            super.onDestroy();
-            if (mHelper != null) mHelper.dispose();
-            mHelper = null;
-        }
 
-        IabHelper.QueryInventoryFinishedListener queryInventoryFinishedListener = new IabHelper.QueryInventoryFinishedListener() {
-            @Override
-            public void onQueryInventoryFinished(IabResult result, Inventory inv) {
-                if (mHelper == null) return;
-
-                if (result.isFailure()) {
-                    Log.d(TAG, "Failed to query inventory: " + result);
-                    return;
-                }
-
-                Log.d(TAG, "Query inventory was successful.");
-
-                SkuDetails sku_small_tip_2 = inv.getSkuDetails(SKU_SMALL_TIP_2);
-                Log.d(TAG, sku_small_tip_2.getTitle() + ": " + sku_small_tip_2.getPrice());
-                Preference preference_small_tip_2 = findPreference(KEY_SMALL_TIP);
-                preference_small_tip_2.setSummary(sku_small_tip_2.getPrice());
-                String title = sku_small_tip_2.getTitle();
-
-                SkuDetails sku_large_tip_5 = inv.getSkuDetails(SKU_LARGE_TIP_5);
-                Log.d(TAG, sku_large_tip_5.getTitle() + ": " + sku_large_tip_5.getPrice());
-                Preference preference_large_tip_5 = findPreference(KEY_LARGE_TIP);
-                preference_large_tip_5.setSummary(sku_large_tip_5.getPrice());
-                title = sku_large_tip_5.getTitle();
-
-                try{
-                    preference_small_tip_2.setTitle(title.substring(0, title.indexOf("(")));
-                    preference_large_tip_5.setTitle(title.substring(0, title.indexOf("(")));
-                }catch (StringIndexOutOfBoundsException e){
-                    e.printStackTrace();
-                    preference_small_tip_2.setTitle(getString(R.string.string_settings_small_donation));
-                    preference_large_tip_5.setTitle(getString(R.string.string_settings_large_donation));
-                }
-
-                // check for un-consumed purchases, and consume them
-                Purchase small_tip_2_purchase = inv.getPurchase(SKU_SMALL_TIP_2);
-                if (small_tip_2_purchase != null){
-                    mHelper.consumeAsync(small_tip_2_purchase, onConsumeFinishedListener);
-                }
-                Purchase large_tip_5_purchase = inv.getPurchase(SKU_LARGE_TIP_5);
-                if (large_tip_5_purchase != null){
-                    mHelper.consumeAsync(large_tip_5_purchase, onConsumeFinishedListener);
-                }
-            }
-        };
-
-        IabHelper.OnIabPurchaseFinishedListener onIabPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
-            @Override
-            public void onIabPurchaseFinished(IabResult result, Purchase info) {
-                if (result.isFailure()) {
-                    Log.d(TAG, "Error purchasing: " + result);
-
-                }else if (info.getSku().equals(SKU_SMALL_TIP_2) || info.getSku().equals(SKU_LARGE_TIP_5)){
-                    // consume purchase
-                    Log.d(TAG, "item purchased: " + result);
-                    mHelper.consumeAsync(info, onConsumeFinishedListener);
-                }
-            }
-        };
-
-        IabHelper.OnConsumeFinishedListener onConsumeFinishedListener = new IabHelper.OnConsumeFinishedListener() {
-            @Override
-            public void onConsumeFinished(Purchase purchase, IabResult result) {
-                if (result.isSuccess()) {
-                    // provision the in-app purchase to the user
-                    Log.d(TAG, "item consumed: " + result);
-                }
-                else {
-                    // handle error
-                    Log.d(TAG, "Error consuming: " + result);
-                }
-            }
-        };
-
-        @Override
-        public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            Log.d(TAG, "onActivityResult(" + requestCode + "," + resultCode + "," + data);
-            if (mHelper == null) return;
-
-            // Pass on the activity result to the helper for handling
-            if (!mHelper.handleActivityResult(requestCode, resultCode, data)) {
-                // not handled, so handle it ourselves (here's where you'd
-                // perform any handling of activity results not related to in-app
-                // billing...
-                super.onActivityResult(requestCode, resultCode, data);
-            }
-            else {
-                Log.d(TAG, "onActivityResult handled by IABUtil.");
-            }
-        }
 
         @Override
         public boolean onPreferenceClick(Preference preference) {
@@ -339,17 +213,6 @@ public class MainActivity extends AppCompatActivity {
 
                     break;
 
-                case KEY_SMALL_TIP:
-                    // IAP for a small tip around 2 €/$
-                    if (mHelper != null) mHelper.flagEndAsync();
-                    mHelper.launchPurchaseFlow(getActivity(), MainActivity.SKU_SMALL_TIP_2, 1001, onIabPurchaseFinishedListener, "");
-                    break;
-
-                case KEY_LARGE_TIP:
-                    // IAP for a small tip around 5 €/$
-                    if (mHelper != null) mHelper.flagEndAsync();
-                    mHelper.launchPurchaseFlow(getActivity(), MainActivity.SKU_LARGE_TIP_5, 1001, onIabPurchaseFinishedListener, "");
-                    break;
 
             }
             return false;

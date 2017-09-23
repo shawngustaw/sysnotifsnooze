@@ -1,4 +1,4 @@
-package com.iboalali.sysnotifsnooze;
+package com.shawngustaw.sysnotifsnooze;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,9 +8,8 @@ import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
-/**
- * Created by alali on 27-Aug-17.
- */
+import com.shawngustaw.sysnotifsnooze.R;
+
 
 public class NotificationListener extends NotificationListenerService {
     private static final String TAG = "NotificationListener";
